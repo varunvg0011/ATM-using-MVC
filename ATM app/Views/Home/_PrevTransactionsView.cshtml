@@ -1,0 +1,68 @@
+﻿
+@{
+    List<string> All_TransList = (List<string>)ViewData["Prev5Trans"];
+}
+
+<style>
+    table, th, td {
+  border: 1px solid black;
+}
+</style>
+
+
+<body>
+    <table>
+        <tr>
+            <th>Transaction ID</th>
+            <th>Transaction Date</th>
+            <th>Transaction Type</th>
+            <th>User ID</th>
+            <th>Card ID</th>
+            <th>Account Number</th>
+        </tr>
+        <tr>
+            @{                   
+                 
+                 foreach (string transVal in All_TransList.Take(6).ToList())
+                 {
+                      <td>@transVal</td>                         
+                 }
+            }
+            
+        </tr>
+        <tr>
+            @{                                    
+                 foreach (string transVal in All_TransList.Skip(6).Take(6).ToList())
+                 {
+                      <td>@transVal</td>                         
+                 }
+             }
+        </tr>
+        <tr>
+            @{                                    
+                 foreach (string transVal in All_TransList.Skip(12).Take(6).ToList())
+                 {
+                      <td>@transVal</td>                         
+                 }
+             }
+        </tr>
+        <tr>
+            @{                                    
+                 foreach (string transVal in All_TransList.Skip(18).Take(6).ToList())
+                 {
+                      <td>@transVal</td>                         
+                 }
+             }
+        </tr>
+        <tr>
+            @{                                    
+                 foreach (string transVal in All_TransList.Skip(24).Take(6).ToList())
+                 {
+                      <td>@transVal</td>                         
+                 }
+             }
+        </tr>            
+    </table>
+</body>
+    
+

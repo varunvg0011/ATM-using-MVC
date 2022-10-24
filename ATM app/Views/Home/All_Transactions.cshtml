@@ -1,0 +1,487 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+<script src="~/js/InputValidations.js" type="text/javascript"></script>
+
+<div class="text-center container">
+    <h1 class="display-4">You have succesfully logged in! Welcome to your account:</h1>
+    <h3>You can perform the below functions in your account. Please choose:</h3>    
+    <div class="d-grid gap-2 col-6 mx-auto">
+        <button class="btn btn-primary" value="Withdraw Money" onclick="WithdrawMoney()">Withdraw Money</button>
+        <button class="btn btn-primary" value="Deposit Money" onclick="DepositMoney()">Deposit Money</button>
+        <button class="btn btn-primary" value="Check Balance" onclick="CheckBalance()">Check Balance</button>
+        @*
+this we are adding to take in function checkBalance
+we are adding the div here after the above buttons so it loads below those buttons
+and to identify that space, we are giving it an id*@
+        <div  
+            id="ResultBalance" >
+        </div>
+
+        <button class="btn btn-primary" value="Check previous 5 transactions" onclick="CheckPrevTrans()">Check Previous 5 transactions</button> 
+        <div  
+            id="PrevFiveTrans" >
+        </div>
+
+        <button class="btn btn-primary" value="Update your details" onclick="UpdateAccDetails()">Update Account details</button>
+    </div> 
+</div>
+
+
+
+
+<script>
+    function WithdrawMoney(){
+        let withdrawAmount = prompt('Enter the amount you want to withdraw:')     
+
+        if(IsValidAmount(withdrawAmount))
+        {
+            let amountConfirm = confirm('Are you sure you want to withdraw ' + withdrawAmount + ' Rupees')
+            if(amountConfirm){
+                //displaying using alert box and AJAX CALL
+                $.ajax
+                ({
+                    url:"WithdrawAmount",
+                    method:"POST",
+                    data:
+                    {
+                         withdrawAmount : withdrawAmount,
+                    },
+                    success: function(res)
+                    {
+                        alert(res)
+                    },
+                    fail: 
+                    {
+                        
+                    },
+                })              
+               
+
+            }
+            else{
+                    alert('Withdrawal transaction cancelled by the user.')
+            }
+        }
+        else{
+            alert('Wrong Amount format entered, amount can only be in numbers. Please try again doing your transaction.')
+        }
+    }
+
+    
+
+
+    function DepositMoney(){
+        let depositAmount = prompt('Enter the amount you want to deposit:')        
+        
+        if(IsValidAmount(depositAmount)){
+            let amountConfirm = confirm('Are you sure you want to deposit ' + depositAmount + ' Rupees')
+            if(amountConfirm){
+                $.ajax
+                ({
+                    url:"DepositAmount",
+                    method:"POST",
+                    data:
+                    {
+                         amount : depositAmount,
+                    },
+                    success: function(res)
+                    {
+                        alert(res)
+                    },
+                    fail: 
+                    {
+                        
+                    },
+                }) 
+            }
+            else{
+                alert('Deposition transaction cancelled by the user.')
+            }               
+        }
+        else{
+            alert('Wrong Amount format entered, amount can only be in numbers. Please try again doing your transaction.')
+        }
+    }
+
+
+
+    function CheckBalance(){
+        //$.ajax({
+        //    url:"CheckBalance",
+        //    method:"POST",
+        //    data:
+        //    {
+                
+        //    },
+        //    success: function(res)
+        //    {
+        //        alert(res)
+        //    },
+        //    fail: 
+        //    {
+                
+        //    },
+        //   })     
+
+
+        //calling the PArtial view using Jquery
+        var urlCheckBalance = "_CheckBalance"
+        $("#ResultBalance").load(urlCheckBalance)
+        
+        
+    }
+
+
+    function CheckPrevTrans(){
+        //window.location="PrevTransactionsView" //when returning a full view
+       $("#PrevFiveTrans").load("_PrevTransactionsView")
+       
+    }
+
+
+    function UpdateAccDetails(){
+        let head = "Choose from below options which personal detail you want to update:\n"
+        let choices = "1. Full Name" + "\n" + "2. DOB" + "\n" + "3. Address" + "\n" + "4. Email ID" + "\n" + "5. Phone number"
+        let chooseOption = prompt(head + choices)
+        if(chooseOptionFormat(chooseOption)){
+            if(chooseOption == 1){
+                UpdateName()
+                
+            }
+            else if(chooseOption == 2){
+                UpdateDOB()
+            }
+            else if(chooseOption == 3){
+                UpdateAddress()
+            }
+            else if(chooseOption == 4){
+                UpdateEmailId()
+            }
+            else{
+                UpdatePhNo()
+            }
+            
+        }
+        else{
+                alert('You have chosen wrong option, please choose from the given ones only!')
+            }             
+    }
+
+    function UpdateName(){
+        $.ajax({
+                    url:"ShowOldName",
+                    method:"POST",
+                    data:
+                    {
+                                      
+                    },
+                    success: function(res)
+                    {
+                        SetNewName(res)
+                    },
+                    fail: 
+                    {
+                        
+                    },
+                   })
+    }
+
+
+    function SetNewName(oldName){
+        let newName = prompt('Your current name is: ' + oldName + '\n' + 'Enter the name you want to change to -')
+        if(isValidNewName(newName)){
+            $.ajax({
+                    url:"UpdateName",
+                    method:"POST",
+                    data:
+                    {
+                        newName : newName                
+                    },
+                    success: function(res)
+                    {
+                        if(res){
+                            let confirmNameChange = confirm('Are you sure you want to change the name to: ' + newName + '?')
+                            if(confirmNameChange){
+                                alert('The name has been changed succesfully from ' + oldName + ' to: ' + newName)
+                            }
+                            else{
+                                alert('Name change request cancelled')
+                            }
+                        }
+                        else{
+                            alert('Name change process failed, please try again or contact the administrator!')
+                        }
+                        
+                    },
+                    fail: 
+                    {
+                       
+                    },
+                   })   
+        }
+        else{
+            alert('You have entered wrong format for new name that you want to change!. Please choose alphabets and spaces only!')
+        }        
+    }
+
+
+
+    function chooseOptionFormat(chooseOption){
+        var regexpattern= new RegExp("^[1-5]{1}$")   
+        if(chooseOption.match(regexpattern))
+        {
+            return true;
+        }
+        return false;
+    }
+                   
+
+
+    function UpdateAddress(){
+        $.ajax({
+                    url:"ShowOldAddress",
+                    method:"POST",
+                    data:
+                    {
+                                      
+                    },
+                    success: function(res)
+                    {
+                        SetNewAddress(res)
+                    },
+                    fail: 
+                    {
+                        
+                    },
+                   })
+    }
+    
+   function SetNewAddress(oldAddress){
+        let newAddress = prompt('Your current address is: ' + oldAddress + '\n' + 'Enter the address you want to change to -')
+        if(IsValidNewAddress(newAddress)){
+            $.ajax({
+                    url:"UpdateAddress",
+                    method:"POST",
+                    data:
+                    {
+                        newAddress : newAddress                
+                    },
+                    success: function(res)
+                    {
+                        if(res){
+                            let confirmAddressChange = confirm('Are you sure you want to change the address to: ' + newAddress + '?')
+                            if(confirmAddressChange){
+                                alert('The address has been changed succesfully from ' + oldAddress + ' to: ' + newAddress)
+                            }
+                            else{
+                                alert('Address change request cancelled')
+                            }
+                        }
+                        else{
+                            alert('Address change process failed, please try again or contact the administrator!')
+                        }
+                        
+                    },
+                    fail: 
+                    {
+                       
+                    },
+                   })   
+        }
+        else{
+            alert('You have entered wrong format for new address that you want to change!. Please choose alphabets and spaces only!')
+        }        
+    }
+
+
+    
+
+
+
+    function UpdateDOB(){
+        $.ajax({
+                    url:"ShowOldDOB",
+                    method:"POST",
+                    data:
+                    {
+                                      
+                    },
+                    success: function(res)
+                    {
+                        SetNewDOB(res)
+                    },
+                    fail: 
+                    {
+                        
+                    },
+                   })
+    }
+
+    function SetNewDOB(oldDOB){
+        let newDOB = prompt('Your current DOB is: ' + oldDOB + '\n' + 'Enter the DOB you want to change to in format DD/MM/YYYY : ')
+        if(IsValidNewDOB(newDOB)){
+            $.ajax({
+                    url:"UpdateDOB",
+                    method:"POST",
+                    data:
+                    {
+                        newDOB : newDOB                
+                    },
+                    success: function(res)
+                    {
+                        if(res){
+                            let confirmDOBChange = confirm('Are you sure you want to change the DOB to: ' + newDOB + '?')
+                            if(confirmDOBChange){
+                                alert('The DOB has been changed succesfully from ' + oldDOB + ' to: ' + newDOB)
+                            }
+                            else{
+                                alert('DOB change request cancelled')
+                            }
+                        }
+                        else{
+                            alert('DOB change process failed, please try again or contact the administrator!')
+                        }                        
+                    },
+                    fail: 
+                    {
+                       
+                    },
+                   })   
+        }
+        else{
+            alert('You have entered wrong format for new DOB that you want to change!. Please use DD/MM/YYYY format only!')
+        }
+    }
+
+    
+    
+    
+    function UpdatePhNo(){
+        $.ajax({
+                    url:"ShowPhNo",
+                    method:"POST",
+                    data:
+                    {
+                                      
+                    },
+                    success: function(res)
+                    {
+                        SetNewPhNo(res)
+                    },
+                    fail: 
+                    {
+                        
+                    },
+                   })
+    }
+
+    function SetNewPhNo(oldPhNo){
+        let newPhNo = prompt('Your current Phone No. is: ' + oldPhNo + '\n' + 'Enter the Phone No. you want to change to having 10 digits: ')
+        if(IsValidNewPhNo(newPhNo)){
+            $.ajax({
+                    url:"UpdatePhNo",
+                    method:"POST",
+                    data:
+                    {
+                        newPhNo : newPhNo               
+                    },
+                    success: function(res)
+                    {
+                        if(res){
+                            let confirmPhNoChange = confirm('Are you sure you want to change the Phone number to: ' + newPhNo + '?')
+                            if(confirmPhNoChange){
+                                alert('The Phone number has been changed succesfully from ' + oldPhNo + ' to: ' + oldPhNo)
+                            }
+                            else{
+                                alert('Phone number change request cancelled')
+                            }
+                        }
+                        else{
+                            alert('Phone no. change process failed, please try again or contact the administrator!')
+                        }                        
+                    },
+                    fail: 
+                    {
+                       
+                    },
+                   })   
+        }
+        else{
+            alert('You have entered wrong format for new Phone number that you want to change!. Phone number must be of 10 digits only!')
+        }
+    }
+
+
+
+
+    
+    
+    
+    function UpdateEmailId(){
+        $.ajax({
+                    url:"ShowEmailId",
+                    method:"POST",
+                    data:
+                    {
+                                      
+                    },
+                    success: function(res)
+                    {
+                        SetNewPhNo(res)
+                    },
+                    fail: 
+                    {
+                        
+                    },
+                   })
+    }
+
+    function SetNewPhNo(oldEmailId){
+        let newEmailId = prompt('Your current Email is: ' + oldEmailId + '\n' + 'Enter the EmailId you want to : ')
+        if(IsValidNewEmailId(newEmailId)){
+            $.ajax({
+                    url:"UpdatePhNo",
+                    method:"POST",
+                    data:
+                    {
+                        newEmailId : newEmailId               
+                    },
+                    success: function(res)
+                    {
+                        if(res){
+                            let confirmEmailChange = confirm('Are you sure you want to change the Email ID to: ' + newPhNo + '?')
+                            if(confirmEmailChange){
+                                alert('The Email Id has been changed succesfully from ' + oldPhNo + ' to: ' + oldPhNo)
+                            }
+                            else{
+                                alert('Email ID change request cancelled')
+                            }
+                        }
+                        else{
+                            alert('Email ID change process failed, please try again or contact the administrator!')
+                        }                        
+                    },
+                    fail: 
+                    {
+                       
+                    },
+                   })   
+        }
+        else{
+            alert('You have entered wrong format for new Email ID that you want to change!.')
+        }
+    }
+
+
+
+
+    
+
+
+
+</script>
+
+
+
+

@@ -1,0 +1,117 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome to ATM Machine</h1>
+    <h3>You need your Card Number, PIN and Card Type to login and make a transaction!</h3>
+
+
+        <div class ="container">
+            <label class="form-label" for="CardNo">Enter your CardNo</label>
+            <input class="form-control" type="text" id="CardNo" name="CardNumber" placeholder = "16 digit Card Number" required />
+            <span id = "CardNoError" style = "display:none;color:red">invalid card Number</span>
+
+            <label class="form-label" for="PIN">Enter your PIN</label>
+            <input class="form-control" type="text" id="PIN" name="PINNumber" placeholder = "4 digit PIN" required />
+            <span id = "PINError" style = "display:none;color:red">invalid PIN Number</span>
+
+
+            @*add select for user to choose*@
+            <label class="form-label" for="CardType">Enter your Card Type</label>
+            <select class="form-control" name="CardType" id="CardType" required>
+              <option value="Credit">Credit</option>
+              <option value="Debit">Debit</option>
+            </select>
+            <span id = "CardType" style = "display:none;color:red">invalid PIN Number</span>
+
+
+@*            <input class="form-control" type="text" id="CardType" name="CardType" placeholder = "either credit or debit" required />
+*@
+
+
+
+            <div class="d-grid gap-2 col-6 mx-auto">
+                <input class="btn btn-primary" type="submit" value="Submit" onclick="Submit()"/> 
+            </div>
+        </div>
+
+    
+</div>
+
+
+
+<script>
+    function Submit()
+    {
+        
+        let cardNo = document.getElementById("CardNo").value       
+        let PIN = document.getElementById("PIN").value
+        let cardType = document.getElementById("CardType").value
+        
+        if(!IsValidCardNo(cardNo))
+        {
+            document.getElementById("CardNoError").style.display = "block"
+        }
+        if(!IsValidPIN(PIN))
+        {
+            document.getElementById("PINError").style.display = "block"
+        }
+
+
+        if(IsValidCardNo(cardNo) && IsValidPIN(PIN))
+        {
+            $.ajax(
+            {
+                url:"Home/GetCardDetails",
+                method: "POST",
+                data:
+                {
+                    card_No : cardNo,
+                    PIN : PIN,
+                    card_Type : cardType,
+                },
+                success: function (res)
+                {               
+                    if(res){
+                        //this wil be considered as a URL
+                        //window.loc means javascript me iss loc pe jana hai. ye as a URL consider ho raha hai
+                        //ye is loc pe jakr iss name ke view ko search karega
+                        window.location="Home/All_Transactions"
+                    }
+                    else{
+                        alert('You have entered wrong credentials. Please enter correct card number and the corect associated PIN of your account to login succesfully!')
+                    }
+                },  
+                fail: function (res)
+                {                    
+                   alert('404 error!!')                    
+                },            
+            }
+            )
+        }       
+    }
+
+    function IsValidPIN(PIN){
+        var regexpattern= new RegExp("^[0-9]{4}$")         
+        if(PIN.match(regexpattern))
+        {
+            return true;
+        }
+        return false;
+        
+    }
+
+    function IsValidCardNo(cardNo)
+    {
+        var regexpattern= new RegExp("^[1-9]{1}[0-9]{15}$") 
+        if(cardNo.match(regexpattern))
+        {
+            return true;
+        }
+        return false;                    
+        
+    }
+</script>
+
+
