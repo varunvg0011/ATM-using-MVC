@@ -4,6 +4,9 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 
+
+//this comment is just to learn GIt and re push the changes
+//adding for the 3rd time
 namespace ATM_app.Controllers
 {
     public class HomeController : Controller
@@ -147,6 +150,11 @@ namespace ATM_app.Controllers
             return PartialView();
         }
 
+
+        public IActionResult _RemovePrevTransView()
+        {
+            return default(PartialViewResult);
+        }
 
 
 

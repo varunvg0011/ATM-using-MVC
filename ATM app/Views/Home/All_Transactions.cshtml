@@ -131,12 +131,17 @@ and to identify that space, we are giving it an id*@
         
         
     }
-
+    var count =0;
 
     function CheckPrevTrans(){
         //window.location="PrevTransactionsView" //when returning a full view
-       $("#PrevFiveTrans").load("_PrevTransactionsView")
-       
+        count +=1;
+        if(count%2==0){
+                $('#PrevFiveTrans').empty();        
+        }
+        else{
+                $("#PrevFiveTrans").load("_PrevTransactionsView")
+        }              
     }
 
 
